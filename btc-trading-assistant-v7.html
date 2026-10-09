@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d18"><title>BTC Trading Assistant V7</title>
+<script src="https://unpkg.com/lightweight-charts@5.0.8/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#080d18;--panel:#101827;--panel2:#0c1422;--line:#223149;--muted:#8ea0b9;--text:#edf3ff;--green:#25d695;--red:#ff647c;--blue:#73a8ff;--amber:#ffc66d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#142847 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#080d18ed;backdrop-filter:blur(12px);z-index:5}
+.brand{display:flex;align-items:center;gap:10px}.logo{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#f7a928,#ef6d35);color:#111;font-weight:900;font-size:18px}.brand strong{display:block;font-size:15px;letter-spacing:.2px}.sub{font-size:11px;color:var(--muted)}.live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px #25d69566}.wrap{max-width:1400px;margin:auto;padding:16px;display:grid;gap:14px}.topgrid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:12px}.panel,.metric{background:linear-gradient(160deg,#111c2e,#0c1421);border:1px solid var(--line);border-radius:16px;padding:15px;min-width:0}.label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.09em}.price{font-size:clamp(25px,3vw,36px);font-weight:760;letter-spacing:-1px;margin:4px 0}.change{font-size:12px}.positive{color:var(--green)}.negative{color:var(--red)}.neutral{color:var(--amber)}.metric strong{display:block;font-size:22px;margin:8px 0 2px}.metric small{color:var(--muted)}.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:12px}.btn,select,input{background:#111d30;color:var(--text);border:1px solid #2a3b56;border-radius:9px;padding:9px 11px;font:inherit;font-size:12px}.btn{cursor:pointer}.btn.active{background:#20395c;border-color:#6098e9;color:#fff}.btn:hover{border-color:#689cf0}.chartpanel{padding:14px}.charthead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.charthead h2,.sectiontitle{font-size:14px;margin:0;font-weight:700}.chartbox{height:360px;width:100%;position:relative}#chart{height:100%;width:100%}.chartstatus{font-size:11px;color:var(--muted);margin-top:7px}.grid2{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}.indicators{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.indicator{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0a1220}.indicator .v{font-size:18px;font-weight:700;margin-top:6px}.signalrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}.signal{font-size:19px;font-weight:800;letter-spacing:.04em}.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700;background:#1a2a3e;color:var(--muted)}.pill.green{background:#10392f;color:var(--green)}.pill.red{background:#3c1d2a;color:var(--red)}.pill.yellow{background:#3b3020;color:var(--amber)}.scorebar{height:7px;border-radius:9px;background:#243249;overflow:hidden;margin:12px 0}.scorebar span{height:100%;display:block;width:50%;background:var(--blue);transition:width .3s}.explain{color:var(--muted);font-size:12px;margin:0}.factors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.factor{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;border-radius:9px;background:#0a1220;border:1px solid #1e2c40;font-size:12px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}.field input,.field select{width:100%}.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.level{background:#0a1220;border:1px solid var(--line);border-radius:10px;padding:10px}.level b{display:block;font-size:15px;margin-top:4px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:right;padding:10px 8px;border-bottom:1px solid #1d2a3c;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}.foot{font-size:11px;color:var(--muted);padding:0 3px 20px}.warning{border:1px solid #56452a;background:#231d13;color:#e7c68d;border-radius:12px;padding:11px 12px;font-size:12px}.muted{color:var(--muted)}.smallbtn{padding:6px 8px;font-size:11px}
+@media(max-width:900px){.topgrid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.indicators{grid-template-columns:repeat(2,1fr)}.chartbox{height:330px}}
+@media(max-width:480px){header{padding:12px}.wrap{padding:10px;gap:10px}.topgrid{gap:8px}.panel,.metric{padding:12px;border-radius:13px}.price{font-size:26px}.chartbox{height:290px}.formgrid{grid-template-columns:1fr 1fr}.levels{grid-template-columns:1fr 1fr}.levels .level:last-child{grid-column:span 2}.brand strong{font-size:13px}.indicators{gap:7px}.indicator{padding:10px}.indicator .v{font-size:16px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">₿</div><div><strong>BTC Trading Assistant <span style="color:#73a8ff">V7</span></strong><div class="sub">Market analysis · signal lab · risk planner</div></div></div><div class="live"><span class="dot" id="liveDot"></span><span id="connection">CONNECTING</span></div></header>
+<main class="wrap">
+<div class="topgrid">
+ <section class="panel"><div class="label">Bitcoin / USDT · Spot reference</div><div class="price" id="price">$—</div><div class="change" id="dayChange">24h change —</div><div class="sub" style="margin-top:8px">Public market data · Binance</div></section>
+ <section class="metric"><div class="label">Trend bias</div><strong id="trendBias">—</strong><small id="trendDetail">Waiting for candles</small></section>
+ <section class="metric"><div class="label">Signal strength</div><strong id="signalStrength">—</strong><small id="signalDetail">Multi-indicator score</small></section>
+ <section class="metric"><div class="label">Volatility (ATR)</div><strong id="atrTop">—</strong><small id="atrDetail">Current timeframe</small></section>
+</div>
+<section class="panel chartpanel">
+ <div class="charthead"><h2>BTCUSDT price action</h2><span class="pill" id="tfPill">15 MIN</span></div>
+ <div class="toolbar" id="timeframes"><button class="btn" data-tf="1m">1m</button><button class="btn" data-tf="5m">5m</button><button class="btn active" data-tf="15m">15m</button><button class="btn" data-tf="1h">1h</button><button class="btn" data-tf="4h">4h</button><button class="btn" data-tf="1d">1D</button><span style="flex:1"></span><button class="btn" id="refresh">Refresh</button></div>
+ <div class="chartbox"><div id="chart"></div></div><div class="chartstatus" id="chartStatus">Loading candle data…</div>
+ <div class="indicators">
+  <div class="indicator"><div class="label">EMA 9 / 21</div><div class="v" id="emaValue">—</div><div class="sub" id="emaState">Trend alignment</div></div>
+  <div class="indicator"><div class="label">RSI (14)</div><div class="v" id="rsiValue">—</div><div class="sub" id="rsiState">Momentum</div></div>
+  <div class="indicator"><div class="label">MACD (12,26,9)</div><div class="v" id="macdValue">—</div><div class="sub" id="macdState">Momentum crossover</div></div>
+  <div class="indicator"><div class="label">ATR (14)</div><div class="v" id="atrValue">—</div><div class="sub" id="atrState">Volatility estimate</div></div>
+ </div>
+</section>
+<div class="grid2">
+ <section class="panel">
+  <div class="charthead"><h2>Signal engine</h2><span class="pill yellow" id="signalPill">ANALYZING</span></div>
+  <div class="signalrow"><div><div class="label">Current assessment</div><div class="signal" id="signalText">WAIT FOR DATA</div></div><div style="text-align:right"><div class="label">Score</div><strong id="scoreText">—</strong></div></div>
+  <div class="scorebar"><span id="scoreBar"></span></div><p class="explain" id="signalExplain">Signals are rule-based analysis, not predictions. Wait for data to load.</p>
+  <div class="factors">
+   <div class="factor"><span>EMA trend</span><b id="fEma">—</b></div><div class="factor"><span>RSI momentum</span><b id="fRsi">—</b></div>
+   <div class="factor"><span>MACD momentum</span><b id="fMacd">—</b></div><div class="factor"><span>Price vs EMA 50</span><b id="fEma50">—</b></div>
+  </div>
+ </section>
+ <section class="panel">
+  <div class="charthead"><h2>Trade planner</h2><span class="pill">SIMULATION ONLY</span></div>
+  <p class="explain">Plan a hypothetical setup using ATR-based stop distance. No orders are placed.</p>
+  <div class="formgrid">
+   <div class="field"><label>Direction</label><select id="direction"><option value="long">Long / Buy</option><option value="short">Short / Sell</option></select></div>
+   <div class="field"><label>Entry price (USDT)</label><input id="entry" type="number" min="0" step="0.01" placeholder="Auto from BTC"></div>
+   <div class="field"><label>Account size (USDT)</label><input id="account" type="number" min="1" value="1000"></div>
+   <div class="field"><label>Risk per trade (%)</label><input id="riskPct" type="number" min="0.1" max="5" step="0.1" value="1"></div>
+   <div class="field"><label>Stop distance (ATR ×)</label><input id="atrMult" type="number" min="0.5" max="5" step="0.1" value="1.5"></div>
+   <div class="field"><label>Target (R multiple)</label><select id="rr"><option value="1.5">1.5R</option><option value="2" selected>2R</option><option value="3">3R</option></select></div>
+  </div>
+  <button class="btn" id="calcPlan" style="margin-top:10px;width:100%">Calculate plan</button>
+  <div class="levels">
+   <div class="level"><div class="label">Stop loss</div><b class="negative" id="stopPrice">—</b></div>
+   <div class="level"><div class="label">Take profit</div><b class="positive" id="targetPrice">—</b></div>
+   <div class="level"><div class="label">Position size*</div><b id="positionSize">—</b><div class="sub" id="riskAmount">Risk —</div></div>
+  </div>
+  <div class="sub" style="margin-top:9px">*Approximate quantity in BTC based on the risk budget; fees, slippage, leverage and liquidation risk are not included.</div>
+ </section>
+</div>
+<section class="panel">
+ <div class="charthead"><h2>Multi-timeframe snapshot</h2><button class="btn smallbtn" id="refreshMtf">Refresh analysis</button></div>
+ <div class="tablewrap"><table><thead><tr><th>Timeframe</th><th>Last close</th><th>EMA 9 / 21</th><th>RSI 14</th><th>MACD</th><th>Bias</th></tr></thead><tbody id="mtfRows"><tr><td colspan="6" style="text-align:center;color:#8ea0b9">Loading analysis…</td></tr></tbody></table></div>
+</section>
+<div class="warning">Risk notice: This tool provides technical calculations for education and planning only. It does not guarantee profitable trades, provide personalized financial advice, or execute orders. Verify data and levels independently. Crypto is volatile; you can lose your entire trading capital.</div>
+<div class="foot">V7 · Browser-side indicators · Public Binance endpoints · No exchange API key required · Not connected to a trading account.</div>
+</main>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const state = {tf:'15m', candles:[], lastPrice:null, chart:null, candleSeries:null, volumeSeries:null, ws:null, lastChange:null, busy:false};
+const API='https://api.binance.com/api/v3';
+const fmt = n => Number.isFinite(n) ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+const fmtCompact = n => Number.isFinite(n) ? n.toLocaleString('en-US',{maximumFractionDigits:4}) : '—';
+const signed = n => Number.isFinite(n) ? `${n>=0?'+':''}${n.toFixed(2)}%` : '—';
+const setText=(id,v)=>$(id).textContent=v;
+function initChart(){
+ const el=$('chart');
+ if(!window.LightweightCharts){setText('chartStatus','Chart library did not load. Check your internet connection and refresh.');return;}
+ state.chart=LightweightCharts.createChart(el,{layout:{background:{type:'solid',color:'#0c1422'},textColor:'#8ea0b9'},grid:{vertLines:{color:'#172438'},horzLines:{color:'#172438'}},rightPriceScale:{borderColor:'#26364d'},timeScale:{borderColor:'#26364d',timeVisible:true,secondsVisible:false},crosshair:{mode:1},width:el.clientWidth,height:el.clientHeight});
+ state.candleSeries=state.chart.addSeries(LightweightCharts.CandlestickSeries,{upColor:'#25d695',downColor:'#ff647c',borderUpColor:'#25d695',borderDownColor:'#ff647c',wickUpColor:'#25d695',wickDownColor:'#ff647c'});
+ state.volumeSeries=state.chart.addSeries(LightweightCharts.HistogramSeries,{priceFormat:{type:'volume'},priceScaleId:'volume'});
+ state.volumeSeries.priceScale().applyOptions({scaleMargins:{top:.82,bottom:0}});
+ window.addEventListener('resize',()=>state.chart.applyOptions({width:el.clientWidth,height:el.clientHeight}));
+}
+function ema(values,period){if(values.length<period)return [];const k=2/(period+1),out=[];let prev=values.slice(0,period).reduce((a,b)=>a+b,0)/period;out[period-1]=prev;for(let i=period;i<values.length;i++){prev=values[i]*k+prev*(1-k);out[i]=prev;}return out;}
+function rsi(values,period=14){if(values.length<=period)return null;let gain=0,loss=0;for(let i=1;i<=period;i++){const d=values[i]-values[i-1];gain+=Math.max(d,0);loss+=Math.max(-d,0);}let ag=gain/period,al=loss/period;for(let i=period+1;i<values.length;i++){const d=values[i]-values[i-1];ag=(ag*(period-1)+Math.max(d,0))/period;al=(al*(period-1)+Math.max(-d,0))/period;}if(al===0)return 100;return 100-100/(1+ag/al);}
+function atr(candles,period=14){if(candles.length<=period)return null;const tr=[];for(let i=1;i<candles.length;i++){const c=candles[i],p=candles[i-1];tr.push(Math.max(c.high-c.low,Math.abs(c.high-p.close),Math.abs(c.low-p.close)));}let val=tr.slice(0,period).reduce((a,b)=>a+b,0)/period;for(let i=period;i<tr.length;i++)val=(val*(period-1)+tr[i])/period;return val;}
+function macd(values){const e12=ema(values,12),e26=ema(values,26),line=[];for(let i=0;i<values.length;i++)if(Number.isFinite(e12[i])&&Number.isFinite(e26[i]))line[i]=e12[i]-e26[i];const compact=line.filter(Number.isFinite),sig=ema(compact,9);if(!compact.length||!sig.length)return {line:null,signal:null,hist:null};const l=compact.at(-1),s=sig.at(-1);return {line:l,signal:s,hist:l-s};}
+function analyze(candles){
+ const closes=candles.map(c=>c.close),e9=ema(closes,9),e21=ema(closes,21),e50=ema(closes,50),r=rsi(closes),a=atr(candles),m=macd(closes),last=closes.at(-1);
+ const x9=e9.at(-1),x21=e21.at(-1),x50=e50.at(-1);
+ if(!Number.isFinite(x9)||!Number.isFinite(x21)||!Number.isFinite(x50)||r===null||!Number.isFinite(m.hist))return null;
+ const factors={ema:x9>x21?1:-1,rsi:r>=55?1:r<=45?-1:0,macd:m.hist>0?1:m.hist<0?-1:0,ema50:last>x50?1:-1};
+ const score=factors.ema+factors.rsi+factors.macd+factors.ema50;
+ const signal=score>=3?'BULLISH':score<=-3?'BEARISH':'NEUTRAL';
+ const confidence=Math.round(Math.abs(score)/4*100);
+ return {last,x9,x21,x50,r,a,m,factors,score,signal,confidence};
+}
+async function getKlines(tf,limit=250){
+ const r=await fetch(`${API}/klines?symbol=BTCUSDT&interval=${tf}&limit=${limit}`,{cache:'no-store'});
+ if(!r.ok)throw new Error(`Market data request failed (${r.status})`);
+ const raw=await r.json();
+ return raw.map(k=>({time:Math.floor(k[0]/1000),open:+k[1],high:+k[2],low:+k[3],close:+k[4],volume:+k[5]}));
+}
+function drawChart(candles){
+ if(!state.candleSeries)return;
+ state.candleSeries.setData(candles.map(c=>({time:c.time,open:c.open,high:c.high,low:c.low,close:c.close})));
+ state.volumeSeries.setData(candles.map(c=>({time:c.time,value:c.volume,color:c.close>=c.open?'#25d69555':'#ff647c55'})));
+ state.chart.timeScale().fitContent();
+}
+function setTone(el,value){el.classList.remove('positive','negative','neutral');el.classList.add(value>0?'positive':value<0?'negative':'neutral');}
+function renderAnalysis(candles){
+ const a=analyze(candles);if(!a){setText('chartStatus','More candles are needed to calculate indicators.');return null;}
+ setText('emaValue',`${fmtCompact(a.x9)} / ${fmtCompact(a.x21)}`);setText('emaState',a.x9>a.x21?'Fast EMA above slow EMA':'Fast EMA below slow EMA');setTone($('emaValue'),a.x9-a.x21);
+ setText('rsiValue',a.r.toFixed(1));setText('rsiState',a.r>=70?'Overbought zone':a.r<=30?'Oversold zone':a.r>=55?'Positive momentum':a.r<=45?'Negative momentum':'Middle range');setTone($('rsiValue'),a.r>55?1:a.r<45?-1:0);
+ setText('macdValue',fmtCompact(a.m.hist));setText('macdState',a.m.hist>0?'MACD histogram positive':'MACD histogram negative');setTone($('macdValue'),a.m.hist);
+ setText('atrValue',fmtCompact(a.a));setText('atrTop',a.a?fmtCompact(a.a):'—');setText('atrState',a.a?`${(a.a/a.last*100).toFixed(2)}% of price`:'Need more candles');setText('atrDetail',`On ${state.tf} candles`);
+ setText('trendBias',a.last>a.x50?'UPTREND':a.last<a.x50?'DOWNTREND':'MIXED');setTone($('trendBias'),a.last>a.x50?1:-1);setText('trendDetail',`Close vs EMA 50 · ${state.tf}`);
+ setText('signalStrength',`${a.confidence}%`);setText('signalDetail',`${Math.abs(a.score)}/4 directional score`);
+ setText('signalText',a.signal);setText('scoreText',`${a.score>0?'+':''}${a.score}/4`);$('scoreBar').style.width=`${Math.abs(a.score)/4*100}%`;$('scoreBar').style.background=a.score>=3?'var(--green)':a.score<=-3?'var(--red)':'var(--amber)';
+ $('signalPill').className='pill '+(a.score>=3?'green':a.score<=-3?'red':'yellow');setText('signalPill',a.signal);
+ setText('signalExplain',a.signal==='NEUTRAL'?'Indicators are mixed or not strong enough under this rule set. Waiting may be preferable to forcing a trade.':`${a.signal==='BULLISH'?'Bullish':'Bearish'} alignment across the indicator score. This is a rule-based condition, not a prediction or a trade instruction.`);
+ for(const [id,key] of [['fEma','ema'],['fRsi','rsi'],['fMacd','macd'],['fEma50','ema50']]){setText(id,a.factors[key]>0?'Bullish':a.factors[key]<0?'Bearish':'Neutral');setTone($(id),a.factors[key]);}
+ setText('chartStatus',`${candles.length} candles loaded · Last candle ${new Date(candles.at(-1).time*1000).toLocaleString()} · Data from Binance public API`);
+ if(!$('entry').value)setPlanEntry(a.last,a.a);
+ return a;
+}
+function setPlanEntry(price,atrVal){$('entry').placeholder=fmt(price);$('entry').value=fmt(price).replaceAll(',','');$('atrMult').dataset.atr=atrVal||'';calcPlan();}
+function calcPlan(){
+ const a=analyze(state.candles);const entry=Number($('entry').value)||(state.lastPrice||a?.last);const account=Number($('account').value)||0,riskPct=Number($('riskPct').value)||1,mult=Number($('atrMult').value)||1.5,rr=Number($('rr').value)||2,atrVal=a?.a||Number($('atrMult').dataset.atr);
+ if(!entry||!atrVal||account<=0){['stopPrice','targetPrice','positionSize','riskAmount'].forEach(id=>setText(id,'—'));return;}
+ const riskDistance=atrVal*mult,dir=$('direction').value==='long'?1:-1,stop=entry-dir*riskDistance,target=entry+dir*riskDistance*rr,riskMoney=account*riskPct/100,qty=riskMoney/riskDistance;
+ setText('stopPrice',fmt(stop));setText('targetPrice',fmt(target));setText('positionSize',`${qty.toFixed(5)} BTC`);setText('riskAmount',`Risk budget ${fmt(riskMoney)} USDT`);
+}
+async function loadMain(){
+ if(state.busy)return;state.busy=true;
+ try{
+  const candles=await getKlines(state.tf,250);state.candles=candles;drawChart(candles);const a=renderAnalysis(candles);
+  if(a&&state.lastPrice===null){state.lastPrice=a.last;setText('price',`$${fmt(a.last)}`);}
+  setText('tfPill',state.tf.toUpperCase());document.querySelectorAll('[data-tf]').forEach(b=>b.classList.toggle('active',b.dataset.tf===state.tf));
+  calcPlan();
+ }catch(e){setText('chartStatus',`Could not load market candles: ${e.message}. Check connection or retry.`);setText('connection','DATA ERROR');$('liveDot').style.background='var(--red)';}
+ finally{state.busy=false;}
+}
+async function refreshMtf(){
+ const tfs=['5m','15m','1h','4h','1d'];$('mtfRows').innerHTML='<tr><td colspan="6" style="text-align:center;color:#8ea0b9">Updating…</td></tr>';
+ const rows=await Promise.all(tfs.map(async tf=>{try{const c=await getKlines(tf,120),a=analyze(c);return {tf,c,a};}catch(e){return {tf,error:true};}}));
+ $('mtfRows').innerHTML=rows.map(o=>{if(o.error||!o.a)return `<tr><td>${o.tf}</td><td colspan="5" style="color:#8ea0b9">Unavailable</td></tr>`;const a=o.a,cl=a.signal==='BULLISH'?'positive':a.signal==='BEARISH'?'negative':'neutral';return `<tr><td>${o.tf}</td><td>${fmt(a.last)}</td><td class="${a.x9>a.x21?'positive':'negative'}">${a.x9>a.x21?'Bullish':'Bearish'}</td><td>${a.r.toFixed(1)}</td><td class="${a.m.hist>0?'positive':'negative'}">${fmtCompact(a.m.hist)}</td><td class="${cl}">${a.signal}</td></tr>`;}).join('');
+}
+function connectTicker(){
+ try{if(state.ws)state.ws.close();state.ws=new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
+ state.ws.onopen=()=>{setText('connection','LIVE PRICE');$('liveDot').style.background='var(--green)';};
+ state.ws.onmessage=e=>{const d=JSON.parse(e.data),p=+d.c,chg=+d.P;state.lastPrice=p;setText('price',`$${fmt(p)}`);setText('dayChange',`24h change ${signed(chg)}`);$('dayChange').className='change '+(chg>=0?'positive':'negative');setText('signalDetail',`Multi-indicator score · 24h ${signed(chg)}`);if(!$('entry').matches(':focus'))$('entry').value=p.toFixed(2);calcPlan();};
+ state.ws.onerror=()=>{setText('connection','RECONNECTING');$('liveDot').style.background='var(--amber)';};
+ state.ws.onclose=()=>{setText('connection','OFFLINE');$('liveDot').style.background='var(--red)';setTimeout(connectTicker,5000);};
+ }catch(e){setText('connection','OFFLINE');}
+}
+document.querySelectorAll('[data-tf]').forEach(b=>b.addEventListener('click',()=>{if(state.tf===b.dataset.tf)return;state.tf=b.dataset.tf;loadMain();}));
+$('refresh').addEventListener('click',()=>{loadMain();connectTicker();});
+$('refreshMtf').addEventListener('click',refreshMtf);
+$('calcPlan').addEventListener('click',calcPlan);
+['direction','entry','account','riskPct','atrMult','rr'].forEach(id=>$(id).addEventListener('change',calcPlan));
+initChart();loadMain();connectTicker();refreshMtf();
+})();
+</script>
+</body></html>
