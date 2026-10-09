@@ -1,0 +1,28 @@
+name: Inspect V7 ZIP
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: List ZIP contents
+        run: |
+          shopt -s nullglob
+          files=(*.zip)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No ZIP file found in repository root."
+            exit 1
+          fi
+          for file in "${files[@]}"; do
+            echo "Inspecting: $file"
+            unzip -l "$file"
+          done
+          
